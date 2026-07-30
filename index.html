@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Kadak Tech — Community Referrals</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --board: #5B4632;
+    --board-dark: #493823;
+    --paper: #FFFDF7;
+    --paper-shadow: rgba(30,20,10,0.28);
+    --ink: #2A2118;
+    --ink-soft: #6b5f52;
+    --pin-open: #8d897f;
+    --pin-interview: #D9932B;
+    --pin-referred: #3E6E96;
+    --pin-placed: #3F8F5D;
+    --brass: #C9A24B;
+    --brass-dark: #a9822f;
+    --danger: #B5432F;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,0.03) 0, transparent 40%),
+      repeating-linear-gradient(45deg, rgba(0,0,0,0.015) 0 2px, transparent 2px 4px),
+      var(--board);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app { max-width: 560px; margin: 0 auto; padding-bottom: 100px; }
+
+  header.hero {
+    padding: 28px 20px 16px;
+    text-align: center;
+  }
+  header.hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 30px;
+    color: #FBF3E4;
+    margin: 0 0 4px;
+    letter-spacing: 0.2px;
+  }
+  header.hero h1 .kn-heart {
+    width: 30px;
+    height: 30px;
+    vertical-align: -6px;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+  }
+  header.hero p {
+    color: rgba(251,243,228,0.72);
+    font-size: 13.5px;
+    margin: 0;
+  }
+
+  .stats {
+    display: flex;
+    gap: 10px;
+    padding: 4px 16px 18px;
+  }
+  .stat-card {
+    flex: 1;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: var(--radius);
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #FBF3E4;
+    display: block;
+    line-height: 1.1;
+  }
+  .stat-label {
+    font-size: 10.5px;
+    color: rgba(251,243,228,0.65);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  nav.tabs {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    gap: 6px;
+    padding: 10px 14px;
+    background: var(--board);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav.tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex: none;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    color: rgba(251,243,228,0.7);
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  .tab-btn.active {
+    background: var(--brass);
+    color: #2A2118;
+    border-color: var(--brass);
+  }
+
+  main { padding: 16px 14px 0; }
+
+  .search-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .search-row input {
+    flex: 1;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    padding: 11px 14px;
+    border-radius: var(--radius);
+    border: none;
+    background: rgba(255,255,255,0.92);
+    color: var(--ink);
+  }
+  .search-row input:focus { outline: 2px solid var(--brass); outline-offset: 1px; }
+
+  .chip-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .chip {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(251,243,228,0.85);
+    background: rgba(255,255,255,0.06);
+    cursor: pointer;
+  }
+  .chip.active { background: rgba(251,243,228,0.92); color: var(--ink); border-color: transparent; }
+
+  .card {
+    position: relative;
+    background: var(--paper);
+    border-radius: var(--radius);
+    padding: 16px 16px 14px;
+    margin-bottom: 12px;
+    box-shadow: 0 6px 14px var(--paper-shadow), 0 1px 0 rgba(255,255,255,0.4) inset;
+    transform: rotate(var(--tilt, 0deg));
+    cursor: pointer;
+  }
+  .card:nth-child(3n+1) { --tilt: -0.6deg; }
+  .card:nth-child(3n+2) { --tilt: 0.4deg; }
+  .card:nth-child(3n)   { --tilt: -0.2deg; }
+
+  .pin {
+    position: absolute;
+    top: -7px;
+    left: 18px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.35);
+    border: 2px solid rgba(255,255,255,0.5);
+  }
+  .pin.open { background: var(--pin-open); }
+  .pin.interviewing { background: var(--pin-interview); }
+  .pin.referred { background: var(--pin-referred); }
+  .pin.placed { background: var(--pin-placed); }
+  .pin.looking { background: var(--pin-open); }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .card-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 17px;
+    margin: 0;
+  }
+  .card-sub {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 2px 0 0;
+  }
+  .badge {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .badge.open, .badge.looking { background: #e9e7e2; color: #55524a; }
+  .badge.interviewing { background: #FBEAD0; color: #8a5c14; }
+  .badge.referred { background: #E1EDF6; color: #2c567e; }
+  .badge.placed { background: #E2F2E7; color: #2c6c45; }
+  .badge.y { background: #E2F2E7; color: #2c6c45; }
+  .badge.n { background: #ece9e3; color: #82786a; }
+
+  .card-notes {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    margin-top: 8px;
+    line-height: 1.4;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 50px 20px;
+    color: rgba(251,243,228,0.75);
+  }
+  .empty h3 { font-family: 'Fraunces', serif; font-size: 19px; margin-bottom: 6px; color: #FBF3E4; }
+  .empty p { font-size: 13.5px; margin: 0; }
+
+  .fab {
+    position: fixed;
+    right: 20px;
+    bottom: 24px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: var(--brass);
+    color: #2A2118;
+    border: none;
+    font-size: 30px;
+    line-height: 1;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+    cursor: pointer;
+    z-index: 30;
+  }
+  .fab:active { background: var(--brass-dark); }
+
+  .sheet-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(20,14,8,0.55);
+    z-index: 40;
+    display: none;
+  }
+  .sheet-backdrop.show { display: block; }
+  .sheet {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    max-width: 560px;
+    margin: 0 auto;
+    background: var(--paper);
+    border-radius: 20px 20px 0 0;
+    padding: 20px 20px 28px;
+    z-index: 41;
+    transform: translateY(100%);
+    transition: transform 0.25s ease;
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+  .sheet.show { transform: translateY(0); }
+  .sheet h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 21px;
+    margin: 4px 0 16px;
+  }
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    padding: 11px 12px;
+    border-radius: 8px;
+    border: 1.5px solid #ddd6c9;
+    background: #fff;
+    color: var(--ink);
+  }
+  .field textarea { resize: vertical; min-height: 60px; }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none; border-color: var(--brass);
+  }
+  .seg {
+    display: flex;
+    gap: 8px;
+  }
+  .seg button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1.5px solid #ddd6c9;
+    background: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--ink-soft);
+  }
+  .seg button.selected {
+    background: var(--brass);
+    border-color: var(--brass);
+    color: #2A2118;
+  }
+  .sheet-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .btn {
+    flex: 1;
+    padding: 13px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .btn-primary { background: var(--brass); color: #2A2118; }
+  .btn-ghost { background: #efe9dc; color: var(--ink); }
+  .btn-danger { background: transparent; color: var(--danger); font-size: 13px; font-weight: 600; padding: 8px; }
+
+  .guide h2 { font-family: 'Fraunces', serif; color: #FBF3E4; font-size: 20px; margin: 18px 0 8px; }
+  .guide p, .guide li { color: rgba(251,243,228,0.85); font-size: 14px; line-height: 1.55; }
+  .guide ol, .guide ul { padding-left: 20px; margin: 6px 0 0; }
+  .guide .note {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    margin-top: 16px;
+    font-size: 13px;
+    color: rgba(251,243,228,0.8);
+  }
+
+  .loading { text-align:center; padding: 60px 20px; color: rgba(251,243,228,0.7); font-size: 14px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sheet, .card { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="hero">
+    <h1>📌 Kadak Tech <svg class="kn-heart" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-label="Karnataka flag heart">
+      <defs>
+        <clipPath id="kn-heart-clip">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </clipPath>
+      </defs>
+      <g clip-path="url(#kn-heart-clip)">
+        <rect x="0" y="0" width="24" height="12.175" fill="#FFDE00"/>
+        <rect x="0" y="12.175" width="24" height="11.825" fill="#E4350D"/>
+      </g>
+    </svg></h1>
+    <p>Referrals &amp; job hunts, shared by the Kadak community</p>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="refer">Refer</button>
+    <button class="tab-btn" data-tab="seekers">Job Seekers</button>
+    <button class="tab-btn" data-tab="wins">Wins</button>
+    <button class="tab-btn" data-tab="guide">Guide</button>
+  </nav>
+
+  <main id="main">
+    <div class="loading">Loading the board…</div>
+  </main>
+</div>
+
+<button class="fab" id="fab">+</button>
+
+<div class="sheet-backdrop" id="backdrop"></div>
+<div class="sheet" id="sheet"></div>
+
+<script>
+const FIREBASE_URL = 'https://referral-board-default-rtdb.firebaseio.com';
+
+let referrals = [];
+let seekers = [];
+let activeTab = 'refer';
+let searchText = '';
+let statusFilter = 'all';
+let loaded = false;
+
+const $main = document.getElementById('main');
+const $stats = document.getElementById('stats');
+const $sheet = document.getElementById('sheet');
+const $backdrop = document.getElementById('backdrop');
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function esc(s) { return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+async function loadData() {
+  try {
+    const r = await storageGet('referrals');
+    referrals = r || [];
+  } catch (e) { referrals = []; showToast('Could not load referrals — showing an empty board for now.'); }
+  try {
+    const s = await storageGet('seekers');
+    seekers = s || [];
+  } catch (e) { seekers = []; showToast('Could not load job seekers — showing an empty board for now.'); }
+  loaded = true;
+  render();
+}
+
+async function storageGet(key, attempt = 1) {
+  try {
+    const res = await fetch(`${FIREBASE_URL}/${key}.json`);
+    if (!res.ok) throw new Error('Firebase read failed: ' + res.status);
+    return await res.json(); // null if nothing stored yet
+  } catch (e) {
+    if (attempt < 3) {
+      await new Promise(res => setTimeout(res, 400 * attempt));
+      return storageGet(key, attempt + 1);
+    }
+    throw e;
+  }
+}
+
+async function storageSet(key, value, attempt = 1) {
+  try {
+    const res = await fetch(`${FIREBASE_URL}/${key}.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(value)
+    });
+    if (!res.ok) throw new Error('Firebase write failed: ' + res.status);
+    return await res.json();
+  } catch (e) {
+    if (attempt < 3) {
+      await new Promise(res => setTimeout(res, 400 * attempt));
+      return storageSet(key, value, attempt + 1);
+    }
+    throw e;
+  }
+}
+
+function showToast(msg) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position:fixed;left:16px;right:16px;bottom:96px;max-width:528px;margin:0 auto;background:#B5432F;color:#fff;padding:12px 16px;border-radius:10px;font-family:Inter,sans-serif;font-size:13.5px;z-index:50;box-shadow:0 8px 20px rgba(0,0,0,0.35);';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.display = 'block';
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => { toast.style.display = 'none'; }, 4500);
+}
+
+// Re-fetches the latest shared data right before writing, applies just this
+// one change to it, and saves that — instead of trusting whatever was loaded
+// whenever the page first opened. This keeps two people saving around the
+// same time from silently wiping out each other's entries.
+async function mutateReferrals(mutatorFn) {
+  try {
+    const fresh = await storageGet('referrals');
+    let freshArr = fresh || [];
+    freshArr = mutatorFn(freshArr);
+    await storageSet('referrals', freshArr);
+    referrals = freshArr;
+    return true;
+  } catch (e) {
+    console.error('save failed', e);
+    showToast("Couldn't save to the shared board — check your connection and try again.");
+    return false;
+  }
+}
+async function mutateSeekers(mutatorFn) {
+  try {
+    const fresh = await storageGet('seekers');
+    let freshArr = fresh || [];
+    freshArr = mutatorFn(freshArr);
+    await storageSet('seekers', freshArr);
+    seekers = freshArr;
+    return true;
+  } catch (e) {
+    console.error('save failed', e);
+    showToast("Couldn't save to the shared board — check your connection and try again.");
+    return false;
+  }
+}
+
+function exportBackup() {
+  const backup = {
+    exportedAt: new Date().toISOString(),
+    referrals,
+    seekers
+  };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `kadak-tech-board-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showToast('Backup downloaded.');
+}
+
+function statusClass(s) { return (s || '').toLowerCase(); }
+
+function renderStats() {
+  const openRefs = referrals.filter(r => r.openToRefer === 'Y').length;
+  const placed = seekers.filter(s => s.status === 'Placed').length;
+  const looking = seekers.filter(s => s.status && s.status !== 'Placed').length;
+  $stats.innerHTML = `
+    <div class="stat-card"><span class="stat-num">${openRefs}</span><span class="stat-label">Can refer</span></div>
+    <div class="stat-card"><span class="stat-num">${looking}</span><span class="stat-label">Job hunting</span></div>
+    <div class="stat-card"><span class="stat-num">${placed}</span><span class="stat-label">Placed 🎉</span></div>
+  `;
+}
+
+function renderReferTab() {
+  const filtered = referrals.filter(r => {
+    const matchesSearch = !searchText || (r.name + r.company + r.notes).toLowerCase().includes(searchText.toLowerCase());
+    const matchesFilter = statusFilter === 'all' || (statusFilter === 'Y' ? r.openToRefer === 'Y' : r.openToRefer === 'N');
+    return matchesSearch && matchesFilter;
+  });
+
+  let html = `
+    <div class="search-row"><input id="searchInput" placeholder="Search by name or company…" value="${esc(searchText)}"></div>
+    <div class="chip-row">
+      <div class="chip ${statusFilter==='all'?'active':''}" data-filter="all">All</div>
+      <div class="chip ${statusFilter==='Y'?'active':''}" data-filter="Y">Open to refer</div>
+      <div class="chip ${statusFilter==='N'?'active':''}" data-filter="N">Not right now</div>
+    </div>
+  `;
+
+  if (filtered.length === 0) {
+    html += `<div class="empty"><h3>No one here yet</h3><p>Tap + to be the first to offer a referral.</p></div>`;
+  } else {
+    filtered.slice().reverse().forEach(r => {
+      html += `
+        <div class="card" data-type="referral" data-id="${r.id}">
+          <div class="pin ${r.openToRefer === 'Y' ? 'placed' : 'open'}"></div>
+          <div class="card-top">
+            <div>
+              <p class="card-name">${esc(r.name)}</p>
+              <p class="card-sub">${esc(r.company)}</p>
+            </div>
+            <span class="badge ${r.openToRefer === 'Y' ? 'y' : 'n'}">${r.openToRefer === 'Y' ? 'Open' : 'Not now'}</span>
+          </div>
+          ${r.notes ? `<p class="card-notes">${esc(r.notes)}</p>` : ''}
+        </div>
+      `;
+    });
+  }
+  return html;
+}
+
+function renderSeekersTab() {
+  const filtered = seekers.filter(s => {
+    const matchesSearch = !searchText || (s.name + s.targetCompany + s.targetRole + s.notes).toLowerCase().includes(searchText.toLowerCase());
+    const matchesFilter = statusFilter === 'all' || s.status === statusFilter;
+    return matchesSearch && matchesFilter;
+  });
+
+  let html = `
+    <div class="search-row"><input id="searchInput" placeholder="Search by name, company, or role…" value="${esc(searchText)}"></div>
+    <div class="chip-row">
+      <div class="chip ${statusFilter==='all'?'active':''}" data-filter="all">All</div>
+      <div class="chip ${statusFilter==='Looking'?'active':''}" data-filter="Looking">Looking</div>
+      <div class="chip ${statusFilter==='Interviewing'?'active':''}" data-filter="Interviewing">Interviewing</div>
+      <div class="chip ${statusFilter==='Referred'?'active':''}" data-filter="Referred">Referred</div>
+      <div class="chip ${statusFilter==='Placed'?'active':''}" data-filter="Placed">Placed</div>
+    </div>
+  `;
+
+  if (filtered.length === 0) {
+    html += `<div class="empty"><h3>No one job hunting yet</h3><p>Tap + to add yourself and what you're targeting.</p></div>`;
+  } else {
+    filtered.slice().reverse().forEach(s => {
+      html += `
+        <div class="card" data-type="seeker" data-id="${s.id}">
+          <div class="pin ${statusClass(s.status)}"></div>
+          <div class="card-top">
+            <div>
+              <p class="card-name">${esc(s.name)}</p>
+              <p class="card-sub">${esc(s.targetRole)} · ${esc(s.targetCompany)}</p>
+            </div>
+            <span class="badge ${statusClass(s.status)}">${esc(s.status || 'Looking')}</span>
+          </div>
+          ${s.notes ? `<p class="card-notes">${esc(s.notes)}</p>` : ''}
+        </div>
+      `;
+    });
+  }
+  return html;
+}
+
+function renderWinsTab() {
+  const wins = seekers.filter(s => s.status === 'Placed');
+  if (wins.length === 0) {
+    return `<div class="empty"><h3>No wins logged yet</h3><p>When someone's status hits "Placed" in Job Seekers, it shows up here automatically.</p></div>`;
+  }
+  let html = '';
+  wins.slice().reverse().forEach(s => {
+    html += `
+      <div class="card" data-type="win" data-id="${s.id}">
+        <div class="pin placed"></div>
+        <div class="card-top">
+          <div>
+            <p class="card-name">🎉 ${esc(s.name)}</p>
+            <p class="card-sub">Landed ${esc(s.targetRole)} at ${esc(s.targetCompany)}</p>
+          </div>
+        </div>
+        ${s.notes ? `<p class="card-notes">${esc(s.notes)}</p>` : ''}
+      </div>
+    `;
+  });
+  return html;
+}
+
+function renderGuideTab() {
+  return `
+    <div class="guide">
+      <h2>For job seekers</h2>
+      <ol>
+        <li>Tap + and add yourself under <b>Job Seekers</b> — target company, role, and any notes (skills, resume link).</li>
+        <li>Check the <b>Refer</b> tab to see who might help — filter by "Open to refer".</li>
+        <li>Update your own <b>status</b> as things move: Looking → Interviewing → Referred → Placed.</li>
+        <li>Hit "Placed"? It shows up in <b>Wins</b> automatically — add a line about your journey if you'd like.</li>
+      </ol>
+      <h2>For referral providers</h2>
+      <ol>
+        <li>Tap + and add yourself under <b>Refer</b> — your company, and whether you're currently open to referring.</li>
+        <li>Check <b>Job Seekers</b> for people targeting your company.</li>
+        <li>Reach out directly on WhatsApp once you spot a match — this board is just for finding each other.</li>
+      </ol>
+      <div class="note">This board is shared with the whole group — anyone with the link can see and edit entries. Tap any card to edit or remove your own listing.</div>
+      <h2>Backup</h2>
+      <p>Download a copy of everything currently on the board — handy to keep just in case.</p>
+      <button class="btn btn-ghost" id="exportBtn" style="width:100%;margin-top:8px;">⬇ Export backup (.json)</button>
+    </div>
+  `;
+}
+
+function render() {
+  if (!loaded) { $main.innerHTML = '<div class="loading">Loading the board…</div>'; return; }
+  renderStats();
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === activeTab));
+  document.getElementById('fab').style.display = activeTab === 'wins' || activeTab === 'guide' ? 'none' : 'block';
+
+  if (activeTab === 'refer') $main.innerHTML = renderReferTab();
+  else if (activeTab === 'seekers') $main.innerHTML = renderSeekersTab();
+  else if (activeTab === 'wins') $main.innerHTML = renderWinsTab();
+  else if (activeTab === 'guide') $main.innerHTML = renderGuideTab();
+
+  attachListListeners();
+}
+
+function attachListListeners() {
+  const input = document.getElementById('searchInput');
+  if (input) {
+    input.addEventListener('input', (e) => { searchText = e.target.value; render(); input.focus(); input.setSelectionRange(input.value.length, input.value.length); });
+  }
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => { statusFilter = chip.dataset.filter; render(); });
+  });
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', () => openEditSheet(card.dataset.type, card.dataset.id));
+  });
+  const exportBtn = document.getElementById('exportBtn');
+  if (exportBtn) exportBtn.addEventListener('click', exportBackup);
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    activeTab = btn.dataset.tab;
+    searchText = '';
+    statusFilter = 'all';
+    render();
+  });
+});
+
+// ---------- Add / Edit sheet ----------
+function openSheet(html) {
+  $sheet.innerHTML = html;
+  $sheet.classList.add('show');
+  $backdrop.classList.add('show');
+}
+function closeSheet() {
+  $sheet.classList.remove('show');
+  $backdrop.classList.remove('show');
+}
+$backdrop.addEventListener('click', closeSheet);
+
+document.getElementById('fab').addEventListener('click', () => {
+  if (activeTab === 'seekers') openSeekerForm();
+  else openReferForm();
+});
+
+function openReferForm(existing) {
+  const isEdit = !!existing;
+  const data = existing || { name: '', company: '', openToRefer: 'Y', notes: '' };
+  openSheet(`
+    <h2>${isEdit ? 'Edit listing' : 'Offer a referral'}</h2>
+    <div class="field"><label>Name</label><input id="f_name" value="${esc(data.name)}" placeholder="Your name"></div>
+    <div class="field"><label>Company</label><input id="f_company" value="${esc(data.company)}" placeholder="Where you work"></div>
+    <div class="field"><label>Open to referring?</label>
+      <div class="seg">
+        <button type="button" class="seg-y ${data.openToRefer==='Y'?'selected':''}">Yes</button>
+        <button type="button" class="seg-n ${data.openToRefer==='N'?'selected':''}">Not right now</button>
+      </div>
+    </div>
+    <div class="field"><label>Notes (team, how to reach you)</label><textarea id="f_notes" placeholder="e.g. Data team, Bengaluru — DM me on WhatsApp">${esc(data.notes)}</textarea></div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" id="cancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="saveBtn">${isEdit ? 'Save' : 'Add to board'}</button>
+    </div>
+    ${isEdit ? '<button class="btn-danger" id="deleteBtn" style="width:100%;margin-top:10px;">Remove this listing</button>' : ''}
+  `);
+
+  let openToRefer = data.openToRefer;
+  $sheet.querySelector('.seg-y').addEventListener('click', function() { openToRefer = 'Y'; this.classList.add('selected'); this.nextElementSibling.classList.remove('selected'); });
+  $sheet.querySelector('.seg-n').addEventListener('click', function() { openToRefer = 'N'; this.classList.add('selected'); this.previousElementSibling.classList.remove('selected'); });
+  document.getElementById('cancelBtn').addEventListener('click', closeSheet);
+
+  document.getElementById('saveBtn').addEventListener('click', async () => {
+    const name = document.getElementById('f_name').value.trim();
+    const company = document.getElementById('f_company').value.trim();
+    const notes = document.getElementById('f_notes').value.trim();
+    if (!name || !company) { alert('Please add a name and company.'); return; }
+    const ok = await mutateReferrals(fresh => {
+      if (isEdit) {
+        const idx = fresh.findIndex(r => r.id === data.id);
+        const updated = { ...(idx !== -1 ? fresh[idx] : data), name, company, openToRefer, notes, updatedAt: new Date().toISOString() };
+        if (idx !== -1) fresh[idx] = updated;
+        else fresh.push(updated); // someone else removed it meanwhile; re-add with your edits
+      } else {
+        fresh.push({ id: uid(), name, company, openToRefer, notes, updatedAt: new Date().toISOString() });
+      }
+      return fresh;
+    });
+    if (ok) { closeSheet(); render(); }
+  });
+
+  if (isEdit) {
+    document.getElementById('deleteBtn').addEventListener('click', async () => {
+      if (!confirm('Remove this listing?')) return;
+      const ok = await mutateReferrals(fresh => fresh.filter(r => r.id !== data.id));
+      if (ok) { closeSheet(); render(); }
+    });
+  }
+}
+
+function openSeekerForm(existing) {
+  const isEdit = !!existing;
+  const data = existing || { name: '', targetCompany: '', targetRole: '', status: 'Looking', notes: '' };
+  const statuses = ['Looking', 'Interviewing', 'Referred', 'Placed'];
+  openSheet(`
+    <h2>${isEdit ? 'Edit listing' : "I'm job hunting"}</h2>
+    <div class="field"><label>Name</label><input id="f_name" value="${esc(data.name)}" placeholder="Your name"></div>
+    <div class="field"><label>Target company</label><input id="f_company" value="${esc(data.targetCompany)}" placeholder="e.g. Amazon"></div>
+    <div class="field"><label>Target role</label><input id="f_role" value="${esc(data.targetRole)}" placeholder="e.g. SDE II"></div>
+    <div class="field"><label>Status</label>
+      <select id="f_status">
+        ${statuses.map(s => `<option value="${s}" ${data.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field"><label>Notes (skills, resume link, story)</label><textarea id="f_notes" placeholder="e.g. 3-5 yrs backend, Python/Java. Resume: drive.google.com/...">${esc(data.notes)}</textarea></div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" id="cancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="saveBtn">${isEdit ? 'Save' : 'Add to board'}</button>
+    </div>
+    ${isEdit ? '<button class="btn-danger" id="deleteBtn" style="width:100%;margin-top:10px;">Remove this listing</button>' : ''}
+  `);
+
+  document.getElementById('cancelBtn').addEventListener('click', closeSheet);
+
+  document.getElementById('saveBtn').addEventListener('click', async () => {
+    const name = document.getElementById('f_name').value.trim();
+    const targetCompany = document.getElementById('f_company').value.trim();
+    const targetRole = document.getElementById('f_role').value.trim();
+    const status = document.getElementById('f_status').value;
+    const notes = document.getElementById('f_notes').value.trim();
+    if (!name || !targetCompany) { alert('Please add a name and target company.'); return; }
+    const ok = await mutateSeekers(fresh => {
+      if (isEdit) {
+        const idx = fresh.findIndex(s => s.id === data.id);
+        const updated = { ...(idx !== -1 ? fresh[idx] : data), name, targetCompany, targetRole, status, notes, updatedAt: new Date().toISOString() };
+        if (idx !== -1) fresh[idx] = updated;
+        else fresh.push(updated); // someone else removed it meanwhile; re-add with your edits
+      } else {
+        fresh.push({ id: uid(), name, targetCompany, targetRole, status, notes, updatedAt: new Date().toISOString() });
+      }
+      return fresh;
+    });
+    if (ok) { closeSheet(); render(); }
+  });
+
+  if (isEdit) {
+    document.getElementById('deleteBtn').addEventListener('click', async () => {
+      if (!confirm('Remove this listing?')) return;
+      const ok = await mutateSeekers(fresh => fresh.filter(s => s.id !== data.id));
+      if (ok) { closeSheet(); render(); }
+    });
+  }
+}
+
+function openEditSheet(type, id) {
+  if (type === 'referral') {
+    const r = referrals.find(x => x.id === id);
+    if (r) openReferForm(r);
+  } else if (type === 'seeker' || type === 'win') {
+    const s = seekers.find(x => x.id === id);
+    if (s) openSeekerForm(s);
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>
